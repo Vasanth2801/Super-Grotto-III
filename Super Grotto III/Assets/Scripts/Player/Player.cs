@@ -8,6 +8,10 @@ public class Player : MonoBehaviour
     [SerializeField] private int facingDirection = 1;
     [SerializeField] private bool isMoving = false;
 
+    [Header("Climbing Settings")]
+    [SerializeField] private float climbSpeed = 5f;
+    [SerializeField] private float gravityScaleAtStart;
+
     [Header("Ground Check Settings")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float checkRadius;
@@ -48,6 +52,8 @@ public class Player : MonoBehaviour
         {
             isMoving = false;
         }
+
+        ClimbLadder();
     }
 
     private void FixedUpdate()
@@ -81,6 +87,10 @@ public class Player : MonoBehaviour
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y,transform.localScale.z);
     }
 
+    void ClimbLadder()
+    {
+
+    }
     
     void CrouchDown()
     {
