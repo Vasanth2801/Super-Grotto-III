@@ -29,22 +29,24 @@ public class Player : MonoBehaviour
     [SerializeField] private bool isCrouching;
 
     [Header("Inputs")]
-    [SerializeField] private float moveInput;
+    [SerializeField] private float moveInputX;
+    [SerializeField] private float moveInputY;
 
     private void Update()
     {
-        moveInput = Input.GetAxisRaw("Horizontal");
+        moveInputX = Input.GetAxisRaw("Horizontal");
+        moveInputY = Input.GetAxisRaw("Vertical");
 
         Jump();
 
-        if(moveInput < 0 && transform.localScale.x > 0 || moveInput > 0 &&  transform.localScale.x < 0)
+        if(moveInputX < 0 && transform.localScale.x > 0 || moveInputX > 0 &&  transform.localScale.x < 0)
         {
             Flip();
         }
 
         HandleAnimations();
 
-        if (moveInput > 0 || moveInput < 0)
+        if (moveInputX > 0 || moveInputX < 0)
         {
             isMoving = true;
         }
@@ -68,7 +70,7 @@ public class Player : MonoBehaviour
 
     private void Move()
     {
-        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(moveInputX * speed, rb.linearVelocity.y);
     }
 
     void Jump()
@@ -89,7 +91,19 @@ public class Player : MonoBehaviour
 
     void ClimbLadder()
     {
+        if(!rb.IsTouchingLayers(LayerMask.GetMask("Ladder")))
+        {
+            rb.gravityScale = gravityScaleAtStart;
+            animator.SetBool("isClimbing", false);
+            return;
+        }
 
+        Vector2 climbVelocity = new Vector2(rb.linearVelocity.x, moveInputY * climbSpeed);
+        rb.linearVelocity = climbVelocity;
+        rb.gravityScale = 0;
+
+        bool playerHasVerticalSpeed = Mathf.Abs(rb.linearVelocity.y) > Mathf.Epsilon;
+        animator.SetBool("isClimbing", playerHasVerticalSpeed);
     }
     
     void CrouchDown()
@@ -123,7 +137,7 @@ public class Player : MonoBehaviour
         {
             return;
         }
-        animator.SetFloat("Speed", Mathf.Abs(moveInput));
+        animator.SetFloat("Speed", Mathf.Abs(moveInputX));
         animator.SetBool("isJumping", rb.linearVelocity.y > 0.1f);
     }
 }
